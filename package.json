@@ -1,0 +1,13 @@
+{
+  "name": "j2e-excel-addin",
+  "private": true,
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": "24.21.0",
+    "pnpm": "12.8.1"
+  },
+  "scripts": {
+    "site": "pnpm run verify && bash scripts/prepare-pages.sh",
+    "verify": "bash scripts/verify-distribution.sh"
+  }
+}

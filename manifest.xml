@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xsi:type="TaskPaneApp">
+  <Id>c2a1f3b3-8d4f-4c6a-9b2e-9a4e2b7f1a6d</Id>
+  <Version>1.0.10.0</Version>
+  <ProviderName>Koizumi, Hiroo</ProviderName>
+  <DefaultLocale>ja-JP</DefaultLocale>
+  <DisplayName DefaultValue="JSON to Excel Entity" />
+  <Description DefaultValue="JSON 文字列を Excel の Entity セル値に変換します。" />
+  <SupportUrl DefaultValue="https://github.com/koizumihiroo/j2e-excel-addin/issues" />
+  <Hosts>
+    <Host Name="Workbook" />
+  </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="ExcelApi" />
+      <Set Name="CustomFunctionsRuntime" MinVersion="1.4" />
+    </Sets>
+  </Requirements>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://koizumihiroo.github.io/j2e-excel-addin/functions.html" />
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Workbook">
+        <AllFormFactors>
+          <ExtensionPoint xsi:type="CustomFunctions">
+            <Script>
+              <SourceLocation resid="Functions.Script.Url" />
+            </Script>
+            <Page>
+              <SourceLocation resid="Functions.Page.Url" />
+            </Page>
+            <Metadata>
+              <SourceLocation resid="Functions.Metadata.Url" />
+            </Metadata>
+            <Namespace resid="Functions.Namespace" />
+          </ExtensionPoint>
+        </AllFormFactors>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Urls>
+        <bt:Url id="Functions.Script.Url" DefaultValue="https://koizumihiroo.github.io/j2e-excel-addin/functions.js" />
+        <bt:Url id="Functions.Page.Url" DefaultValue="https://koizumihiroo.github.io/j2e-excel-addin/functions.html" />
+        <bt:Url id="Functions.Metadata.Url" DefaultValue="https://koizumihiroo.github.io/j2e-excel-addin/functions.json" />
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="Functions.Namespace" DefaultValue="J2E" />
+      </bt:ShortStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

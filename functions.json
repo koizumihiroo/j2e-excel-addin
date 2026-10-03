@@ -1,0 +1,108 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/office-js/custom-functions.schema.json",
+  "allowCustomDataForDataTypeAny": true,
+  "functions": [
+    {
+      "id": "ENTITY",
+      "name": "JSON",
+      "description": "JSON値をExcelの値またはEntityに変換します。",
+      "parameters": [
+        {
+          "name": "jsonText",
+          "description": "Entity 化する JSON 文字列",
+          "type": "string",
+          "dimensionality": "scalar"
+        }
+      ],
+      "result": {
+        "type": "any",
+        "dimensionality": "scalar"
+      }
+    },
+    {
+      "id": "OBJECT",
+      "name": "OBJECT",
+      "description": "JSONオブジェクトだけをExcel Entityに変換します。",
+      "parameters": [
+        {
+          "name": "jsonText",
+          "description": "JSONオブジェクトを含む文字列",
+          "type": "string",
+          "dimensionality": "scalar"
+        }
+      ],
+      "result": {
+        "type": "any",
+        "dimensionality": "scalar"
+      }
+    },
+    {
+      "id": "OBJECTKEYS",
+      "name": "OBJECT_KEYS",
+      "description": "JSONオブジェクトまたはEntityのキーを縦方向にspillします。",
+      "parameters": [
+        {
+          "name": "input",
+          "description": "JSONオブジェクトの文字列またはEntity",
+          "type": "any",
+          "dimensionality": "scalar"
+        }
+      ],
+      "result": {
+        "type": "any",
+        "dimensionality": "matrix"
+      }
+    },
+    {
+      "id": "OBJECTVALUES",
+      "name": "OBJECT_VALUES",
+      "description": "JSONオブジェクトまたはEntityの値を縦方向にspillします。",
+      "parameters": [
+        {
+          "name": "input",
+          "description": "JSONオブジェクトの文字列またはEntity",
+          "type": "any",
+          "dimensionality": "scalar"
+        }
+      ],
+      "result": {
+        "type": "any",
+        "dimensionality": "matrix"
+      }
+    },
+    {
+      "id": "ISEMPTYOBJECT",
+      "name": "IS_EMPTY_OBJECT",
+      "description": "JSONテキストまたはExcel Entityが空のオブジェクトか判定します。",
+      "parameters": [
+        {
+          "name": "jsonText",
+          "description": "判定するJSONテキストまたはExcel Entity",
+          "type": "any",
+          "dimensionality": "scalar"
+        }
+      ],
+      "result": {
+        "type": "boolean",
+        "dimensionality": "scalar"
+      }
+    },
+    {
+      "id": "ARRAY",
+      "name": "ARRAY",
+      "description": "JSON 配列を Excel のspill可能な配列に変換します。",
+      "parameters": [
+        {
+          "name": "jsonText",
+          "description": "spillするJSON配列",
+          "type": "string",
+          "dimensionality": "scalar"
+        }
+      ],
+      "result": {
+        "type": "any",
+        "dimensionality": "matrix"
+      }
+    }
+  ]
+}
