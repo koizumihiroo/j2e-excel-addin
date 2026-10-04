@@ -203,11 +203,11 @@ GitHub Actionsは、`main`へのpush時に配布ファイルを検証し、GitHu
 ```bash
 corepack enable
 pnpm install --frozen-lockfile
-make verify
-make site
+pnpm run verify
+pnpm run site
 ```
 
-`make site` は `_site/` に公開対象の静的ファイルを作成します。既存の `_site/` を上書きしないため、作り直す場合は内容を確認してから削除してください。
+`pnpm run site` は配布物を検証してから、`_site/` に公開対象の静的ファイルを作成します。`pnpm run verify` は検証だけを実行します。`pnpm run site` は既存の `_site/` も再生成できますが、生成マーカーのない旧出力は配布対象の6ファイルだけで構成されている場合に限って引き継ぎます。想定外のファイル、ディレクトリ、シンボリックリンク、または不正なマーカーがある場合は、内容を保護するため更新を拒否します。
 
 初回公開時は、次のGitHub CLIコマンドでPagesビルド方式をGitHub Actionsへ設定してから`main`へpushします。
 
