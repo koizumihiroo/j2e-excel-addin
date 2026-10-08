@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="JSONテキストをExcelの値、Entity、spill配列に変換するカスタム関数アドインです。">
+  <title>J2E Excel Add-in</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.65;
+      color: #1f2937;
+      background: #ffffff;
+    }
+
+    body {
+      box-sizing: border-box;
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: clamp(1rem, 4vw, 3rem) 1.25rem;
+    }
+
+    a {
+      color: #075985;
+      text-underline-offset: 0.15em;
+    }
+
+    a:focus-visible {
+      outline: 3px solid #92400e;
+      outline-offset: 3px;
+    }
+
+    h1, h2, h3, h4 {
+      line-height: 1.3;
+      margin-block: 1.75em 0.65em;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: clamp(2rem, 7vw, 2.7rem);
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 1rem;
+      border-radius: 0.4rem;
+      background: #f3f4f6;
+    }
+
+    :not(pre) > code {
+      padding: 0.1em 0.3em;
+      border-radius: 0.2rem;
+      background: #f3f4f6;
+      overflow-wrap: anywhere;
+    }
+
+    table {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 0.45rem 0.75rem;
+      border: 1px solid #9ca3af;
+      text-align: start;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      html {
+        scroll-behavior: smooth;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+<h1>J2E Excel Add-in</h1>
+<p>JSONテキストをExcelの値、Entity、spill配列に変換するExcelカスタム関数アドインです。</p>
+<p>公開サイト: <a href="https://koizumihiroo.github.io/j2e-excel-addin/">https://koizumihiroo.github.io/j2e-excel-addin/</a></p>
+<h2>利用上の注意</h2>
+<p>このアドインは現時点の状態のまま提供しており、動作、継続的な提供、特定目的への適合性を含め、明示または黙示を問わず一切保証しません。公開後でも、セキュリティ上または運用上の理由により、予告なく公開を一時停止または終了する場合があります。</p>
+<h2>このアドインを試す</h2>
+<p>このアドインは現在Microsoft Marketplaceには掲載されていません。試す場合は、利用者自身が以下の手順で<a href="https://koizumihiroo.github.io/j2e-excel-addin/manifest.xml">manifest.xml</a>をダウンロードし、自分が使用するExcelに追加します。</p>
+<h3>必要条件</h3>
+<ul>
+<li>Excel for the web、またはCustom Functions Runtime 1.4以降に対応するMicrosoft 365版Excel for Windowsを使用すること。</li>
+<li>個人用Microsoftアカウントまたは組織のMicrosoft 365アカウントで、Excelにサインインしていること。</li>
+<li>GitHub PagesとMicrosoftがホストするOffice.jsへ接続できるインターネット接続があること。</li>
+</ul>
+<p>ネットワーク接続は初回の関数実行時だけでなく、アドインの読み込み、数式の再計算、ブックを再度開くときにも必要になる可能性があります。Excelのキャッシュ動作は環境によって異なるため、オフラインでの動作は保証されません。</p>
+<h3>Excel for the web / Excel for Windows（Microsoft 365デスクトップアプリ）</h3>
+<ol>
+<li><a href="https://koizumihiroo.github.io/j2e-excel-addin/manifest.xml">manifest.xml</a> を自分の端末へダウンロードします。</li>
+<li>Excelで、自分が使用するブックを開きます。</li>
+<li><strong>ホーム &gt; アドイン</strong> を選びます。</li>
+<li>メニュー右下の <strong>+ その他のアドイン</strong> を選びます。</li>
+<li><strong>Office アドイン</strong> 画面で、<strong>ストア</strong> ではなく <strong>個人用アドイン</strong> を選びます。</li>
+<li>右上の <strong>個人用アドインの管理</strong> を選びます。</li>
+<li><strong>アドインのアップロード</strong> を選び、自分でダウンロードした <code>manifest.xml</code> を選択して <strong>アップロード</strong> します。</li>
+</ol>
+<p>利用者の組織ポリシーによっては、独自アドインの追加に管理者の許可が必要です。追加後は、Excelのセルで <code>=J2E.JSON(A1)</code> などのカスタム関数を使用できます。</p>
+<p><strong>個人用アドイン</strong> に <strong>アドインのアップロード</strong> が表示されない場合は、組織ポリシーで独自アドインのアップロードが無効になっています。組織のMicrosoft 365管理者へ許可を依頼してください。</p>
+<p>Excelのバージョン、更新チャネル、アカウントの種類、組織ポリシーによって画面構成やボタン名が異なる場合があります。その場合は、<strong>アドイン</strong>、<strong>個人用アドイン</strong>、<strong>個人用アドインの管理</strong>、<strong>アドインのアップロード</strong> に相当する項目を探してください。</p>
+<h2>アドインを削除する</h2>
+<p>アドインを追加前の状態へ戻す場合は、Excelの <strong>マイ アドイン</strong> からJ2Eを削除します。</p>
+<ol>
+<li>Excel for the webでは <strong>ホーム &gt; アドイン &gt; その他の設定</strong>、Excel for Windowsでは <strong>挿入 &gt; アドイン &gt; マイ アドイン</strong> を開きます。</li>
+<li>一覧から <strong>JSON to Excel Entity</strong> または <strong>J2E</strong> を選び、<strong>削除</strong> を実行します。</li>
+<li>ダウンロードした <code>manifest.xml</code> が不要であれば、端末から削除します。</li>
+</ol>
+<p>ダウンロード済みの <code>manifest.xml</code> を端末から削除するだけでは、Excelに追加済みのアドインは削除されません。アドインを削除しても、既存のセルに入力した数式や計算結果は自動的には削除されません。</p>
+<h2>関数</h2>
+<p>関数例を続けて試す場合は、次のタブ区切りデータを空の<code>Sheet1</code>の<code>A1</code>へ一度だけ貼り付けます。<code>A1</code>にJSON object、<code>B1</code>にJSON array、<code>C1</code>に空のJSON objectが入ります。</p>
+<pre><code class="language-text">{&quot;商品&quot;:&quot;りんご&quot;,&quot;単価&quot;:120,&quot;在庫&quot;:25}	[[1,2],[3,4]]	{}
+</code></pre>
+<p>コードブロックの1行全体をコピーし、<code>Sheet1!A1</code>を選択して <strong>Ctrl+V</strong> で貼り付けてください。右クリックで貼り付ける場合は、<strong>貼り付けのオプション &gt; 値</strong> を選びます。3つの値がA1の1セルに入った場合は、A1を選択して <strong>データ &gt; 区切り位置 &gt; 区切り記号付き &gt; タブ</strong> を選びます。</p>
+<p><code>OBJECT_KEYS</code>、<code>OBJECT_VALUES</code>、<code>ARRAY</code> は複数セルへ結果をスピルします。各関数の数式セルの下と右側を空けてください。</p>
+<h3><code>J2E.JSON(jsonText)</code></h3>
+<p>任意のJSON文字列をExcelの値へ変換します。文字列、数値、真偽値は通常のExcel値として返し、オブジェクトまたは配列はExcel Entityとして返します。</p>
+<p><strong>既知の不具合:</strong> Excel JavaScript APIには<a href="https://learn.microsoft.com/en-us/javascript/api/excel/excel.emptycellvalue?view=excel-js-preview">空セル値（<code>EmptyCellValue</code>）</a>が定義されており、Excelカスタム関数も<a href="https://learn.microsoft.com/en-us/office/dev/add-ins/excel/custom-functions-data-types-concepts">同じJSONスキーマ</a>を使用します。それでも、現在のExcelアプリでは <code>{&quot;key&quot;:null}</code> のようなJSONを <code>J2E.JSON</code> で評価すると <code>#VALUE!</code> エラーになります。</p>
+<p><strong>例</strong></p>
+<p><code>A1</code>のJSON objectを変換する数式を<code>D1</code>に入力します。</p>
+<pre><code class="language-excel">=J2E.JSON(A1)
+</code></pre>
+<p><code>D1</code>は<code>商品</code>、<code>単価</code>、<code>在庫</code>をプロパティに持つEntityになります。</p>
+<h3><code>J2E.OBJECT(jsonText)</code></h3>
+<p>JSONオブジェクトだけをExcel Entityへ変換します。最上位が配列、文字列、数値、真偽値、<code>null</code> のJSONは受け付けません。</p>
+<p><code>A1</code>のobjectをExcel Entityへ変換する数式を<code>E1</code>に入力します。</p>
+<pre><code class="language-excel">=J2E.OBJECT(A1)
+</code></pre>
+<p><code>E1</code>は<code>商品</code>、<code>単価</code>、<code>在庫</code>をプロパティに持つEntityになります。</p>
+<h3><code>J2E.OBJECT_KEYS(input)</code></h3>
+<p>JSONオブジェクトの文字列、または <code>J2E.JSON</code> / <code>J2E.OBJECT</code> が返したEntityを受け取り、キーを1列にスピルします。空のオブジェクトはスピルできません。</p>
+<p><code>A1</code>のobjectのキーを取得する数式を<code>F1</code>に入力します。</p>
+<pre><code class="language-excel">=J2E.OBJECT_KEYS(A1)
+</code></pre>
+<p><code>F1:F3</code>に<code>商品</code>、<code>単価</code>、<code>在庫</code>が順に表示されます。</p>
+<h3><code>J2E.OBJECT_VALUES(input)</code></h3>
+<p>JSONオブジェクトの文字列、または <code>J2E.JSON</code> / <code>J2E.OBJECT</code> が返したEntityを受け取り、値を1列にスピルします。空のオブジェクトはスピルできません。</p>
+<p><code>A1</code>のobjectの値を取得する数式を<code>G1</code>に入力します。</p>
+<pre><code class="language-excel">=J2E.OBJECT_VALUES(A1)
+</code></pre>
+<p><code>G1:G3</code>に<code>りんご</code>、<code>120</code>、<code>25</code>が順に表示されます。</p>
+<h3><code>J2E.IS_EMPTY_OBJECT(input)</code></h3>
+<p>JSON文字列またはExcel Entityが空のオブジェクトかどうかを判定し、<code>TRUE</code> または <code>FALSE</code> を返します。オブジェクト以外のJSONは <code>FALSE</code> になります。</p>
+<p>空のobjectが入った<code>C1</code>を判定する数式を<code>H1</code>に入力します。</p>
+<pre><code class="language-excel">=J2E.IS_EMPTY_OBJECT(C1)
+</code></pre>
+<p><code>H1</code>は<code>TRUE</code>になります。Entityを判定するには、<code>H2</code>に<code>=J2E.IS_EMPTY_OBJECT(D1)</code>を入力します。結果は<code>FALSE</code>です。</p>
+<h3><code>J2E.ARRAY(jsonText)</code></h3>
+<p>JSON配列をExcelのスピル配列へ変換します。1次元配列は1列に、入れ子の配列は行列としてスピルします。空配列と、行ごとの列数が異なる配列は受け付けません。</p>
+<p><code>B1</code>のJSON arrayをスピルする数式を<code>I1</code>に入力します。</p>
+<pre><code class="language-excel">=J2E.ARRAY(B1)
+</code></pre>
+<p><code>I1:J2</code>に1行目<code>1</code> / <code>2</code>、2行目<code>3</code> / <code>4</code>が表示されます。</p>
+<h2>プライバシー</h2>
+<p>J2Eの関数コードは、受け取ったJSONテキストをExcel内で処理します。関数実装からJSONの内容をJ2Eのサーバーへ送信する処理はありません。Excelはこのサイトから関数ファイルを読み込み、Office.jsはMicrosoftがホストするURLから読み込みます。</p>
+<h2>サポート</h2>
+<p>不具合や質問は<a href="https://github.com/koizumihiroo/j2e-excel-addin/issues">GitHub Issues</a>へ報告してください。
+個別のサポート対応は行っておらず、問い合わせへの回答や修正対応は保証しません。</p>
+
+  </main>
+</body>
+</html>
