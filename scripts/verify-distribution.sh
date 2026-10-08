@@ -10,25 +10,54 @@ fi
 
 readonly distribution_files=(
   README.md
+  public/index.html
+  public/manifest.xml
+  public/functions.html
+  public/functions.js
+  public/functions.json
+)
+readonly root_release_files=(
   index.html
   manifest.xml
   functions.html
   functions.js
   functions.json
+  example.xlsx
 )
 
+if [[ ! -d public || -L public ]]; then
+  printf 'Expected a regular public directory\n' >&2
+  exit 1
+fi
+
+for file in "${root_release_files[@]}"; do
+  if [[ -e "$file" || -L "$file" ]]; then
+    printf 'Release files must be stored under public/: %s\n' "$file" >&2
+    exit 1
+  fi
+done
+
+if [[ -e public/example.xlsx || -L public/example.xlsx ]]; then
+  printf 'Retired release file must not be present: public/example.xlsx\n' >&2
+  exit 1
+fi
+
 for file in "${distribution_files[@]}"; do
+  if [[ ! -f "$file" || -L "$file" ]]; then
+    printf 'Expected a regular distribution file: %s\n' "$file" >&2
+    exit 1
+  fi
   test -s "$file"
 done
 
-test ! -e functions.js.map
-node --check functions.js
+test ! -e public/functions.js.map
+node --check public/functions.js
 node - <<'NODE'
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 
-const manifest = fs.readFileSync("manifest.xml", "utf8");
-const functionsSource = fs.readFileSync("functions.js", "utf8");
+const manifest = fs.readFileSync("public/manifest.xml", "utf8");
+const functionsSource = fs.readFileSync("public/functions.js", "utf8");
 const tokens = /<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<\?[\s\S]*?\?>|<\/?[\w:.-]+(?:\s+[^<>]*?)?\/?>/g;
 const openTag = /^<([\w:.-]+)(?:\s+[^<>]*?)?\/?>$/;
 const closingTag = /^<\/([\w:.-]+)\s*>$/;

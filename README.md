@@ -10,15 +10,15 @@ JSONテキストをExcelの値、Entity、spill配列に変換するExcelカス�
 
 ## 配布ファイル
 
-- [Excel用manifest](manifest.xml)
+- [Excel用manifest](https://koizumihiroo.github.io/j2e-excel-addin/manifest.xml)
 - [GitHub Pagesの公開ページ](https://koizumihiroo.github.io/j2e-excel-addin/)
-- [関数ランタイムHTML](functions.html)
-- [関数JavaScript](functions.js)
-- [関数メタデータ](functions.json)
+- [関数ランタイムHTML](https://koizumihiroo.github.io/j2e-excel-addin/functions.html)
+- [関数JavaScript](https://koizumihiroo.github.io/j2e-excel-addin/functions.js)
+- [関数メタデータ](https://koizumihiroo.github.io/j2e-excel-addin/functions.json)
 
 ## このアドインを試す
 
-このアドインは現在Microsoft Marketplaceには掲載されていません。試す場合は、利用者自身が以下の手順で `manifest.xml` をダウンロードし、自分が使用するExcelに追加します。
+このアドインは現在Microsoft Marketplaceには掲載されていません。試す場合は、利用者自身が以下の手順で[manifest.xml](https://koizumihiroo.github.io/j2e-excel-addin/manifest.xml)をダウンロードし、自分が使用するExcelに追加します。
 
 ### 必要条件
 
@@ -30,7 +30,7 @@ JSONテキストをExcelの値、Entity、spill配列に変換するExcelカス�
 
 ### Excel for the web / Excel for Windows（Microsoft 365デスクトップアプリ）
 
-1. [manifest.xml](manifest.xml) を自分の端末へダウンロードします。
+1. [manifest.xml](https://koizumihiroo.github.io/j2e-excel-addin/manifest.xml) を自分の端末へダウンロードします。
 2. Excelで、自分が使用するブックを開きます。
 3. **ホーム > アドイン** を選びます。
 4. メニュー右下の **+ その他のアドイン** を選びます。
@@ -56,129 +56,91 @@ Excelのバージョン、更新チャネル、アカウントの種類、組織
 
 ## 関数
 
-JSON文字列を入力する例では、コードブロック内の1行だけをコピーします。入力先セル（例: `A1`）を選択して **Ctrl+V** で貼り付けてください。右クリックで貼り付ける場合は、**貼り付けのオプション > 値** を選びます。**形式を選択して貼り付け**は不要です。
+関数例を続けて試す場合は、次のタブ区切りデータを空の`Sheet1`の`A1`へ一度だけ貼り付けます。`A1`にJSON object、`B1`にJSON array、`C1`に空のJSON objectが入ります。
 
-`OBJECT_KEYS`、`OBJECT_VALUES`、`ARRAY` は複数セルへ結果をスピルします。数式を入力するセルの下と右側を空けてください。
+```text
+{"商品":"りんご","単価":120,"在庫":25}	[[1,2],[3,4]]	{}
+```
+
+コードブロックの1行全体をコピーし、`Sheet1!A1`を選択して **Ctrl+V** で貼り付けてください。右クリックで貼り付ける場合は、**貼り付けのオプション > 値** を選びます。3つの値がA1の1セルに入った場合は、A1を選択して **データ > 区切り位置 > 区切り記号付き > タブ** を選びます。
+
+`OBJECT_KEYS`、`OBJECT_VALUES`、`ARRAY` は複数セルへ結果をスピルします。各関数の数式セルの下と右側を空けてください。
 
 ### `J2E.JSON(jsonText)`
 
 任意のJSON文字列をExcelの値へ変換します。文字列、数値、真偽値は通常のExcel値として返し、オブジェクトまたは配列はExcel Entityとして返します。
 
+**既知の不具合:** Excel JavaScript APIには[空セル値（`EmptyCellValue`）](https://learn.microsoft.com/en-us/javascript/api/excel/excel.emptycellvalue?view=excel-js-preview)が定義されており、Excelカスタム関数も[同じJSONスキーマ](https://learn.microsoft.com/en-us/office/dev/add-ins/excel/custom-functions-data-types-concepts)を使用します。それでも、現在のExcelアプリでは `{"key":null}` のようなJSONを `J2E.JSON` で評価すると `#VALUE!` エラーになります。
+
 **例**
 
-1. **`A1` を選択し、次の文字列をコピーして Ctrl+V で貼り付けます。** 右クリックで貼り付ける場合は、**貼り付けのオプション > 値** を選びます。
+`A1`のJSON objectを変換する数式を`D1`に入力します。
 
-   ```json
-   {"氏名":"山田太郎","年齢":30,"有効":true}
-   ```
+```excel
+=J2E.JSON(A1)
+```
 
-2. `B1` に次の数式を入力します。
-
-   ```excel
-   =J2E.JSON(A1)
-   ```
-
-`B1` は `氏名`、`年齢`、`有効` をプロパティに持つEntityになります。
+`D1`は`商品`、`単価`、`在庫`をプロパティに持つEntityになります。
 
 ### `J2E.OBJECT(jsonText)`
 
 JSONオブジェクトだけをExcel Entityへ変換します。最上位が配列、文字列、数値、真偽値、`null` のJSONは受け付けません。
 
-**例**
+`A1`のobjectをExcel Entityへ変換する数式を`E1`に入力します。
 
-1. **`A1` を選択し、次の文字列をコピーして Ctrl+V で貼り付けます。** 右クリックで貼り付ける場合は、**貼り付けのオプション > 値** を選びます。
+```excel
+=J2E.OBJECT(A1)
+```
 
-   ```json
-   {"商品":"りんご","単価":120}
-   ```
-
-2. `B1` に次の数式を入力します。
-
-   ```excel
-   =J2E.OBJECT(A1)
-   ```
-
-`B1` は `商品` と `単価` をプロパティに持つEntityになります。
+`E1`は`商品`、`単価`、`在庫`をプロパティに持つEntityになります。
 
 ### `J2E.OBJECT_KEYS(input)`
 
 JSONオブジェクトの文字列、または `J2E.JSON` / `J2E.OBJECT` が返したEntityを受け取り、キーを1列にスピルします。空のオブジェクトはスピルできません。
 
-**例**
+`A1`のobjectのキーを取得する数式を`F1`に入力します。
 
-1. **`A1` を選択し、次の文字列をコピーして Ctrl+V で貼り付けます。** 右クリックで貼り付ける場合は、**貼り付けのオプション > 値** を選びます。
+```excel
+=J2E.OBJECT_KEYS(A1)
+```
 
-   ```json
-   {"商品":"りんご","単価":120,"在庫":25}
-   ```
-
-2. `B1` に次の数式を入力します。
-
-   ```excel
-   =J2E.OBJECT_KEYS(A1)
-   ```
-
-`B1:B3` に `商品`、`単価`、`在庫` が順に表示されます。
+`F1:F3`に`商品`、`単価`、`在庫`が順に表示されます。
 
 ### `J2E.OBJECT_VALUES(input)`
 
 JSONオブジェクトの文字列、または `J2E.JSON` / `J2E.OBJECT` が返したEntityを受け取り、値を1列にスピルします。空のオブジェクトはスピルできません。
 
-**例**
+`A1`のobjectの値を取得する数式を`G1`に入力します。
 
-1. **`A1` を選択し、次の文字列をコピーして Ctrl+V で貼り付けます。** 右クリックで貼り付ける場合は、**貼り付けのオプション > 値** を選びます。
+```excel
+=J2E.OBJECT_VALUES(A1)
+```
 
-   ```json
-   {"商品":"りんご","単価":120,"在庫":25}
-   ```
-
-2. `B1` に次の数式を入力します。
-
-   ```excel
-   =J2E.OBJECT_VALUES(A1)
-   ```
-
-`B1:B3` に `りんご`、`120`、`25` が順に表示されます。
+`G1:G3`に`りんご`、`120`、`25`が順に表示されます。
 
 ### `J2E.IS_EMPTY_OBJECT(input)`
 
 JSON文字列またはExcel Entityが空のオブジェクトかどうかを判定し、`TRUE` または `FALSE` を返します。オブジェクト以外のJSONは `FALSE` になります。
 
-**例**
+空のobjectが入った`C1`を判定する数式を`H1`に入力します。
 
-1. **`A1` を選択し、次の文字列をコピーして Ctrl+V で貼り付けます。** 右クリックで貼り付ける場合は、**貼り付けのオプション > 値** を選びます。
+```excel
+=J2E.IS_EMPTY_OBJECT(C1)
+```
 
-   ```json
-   {}
-   ```
-
-2. `B1` に次の数式を入力します。
-
-   ```excel
-   =J2E.IS_EMPTY_OBJECT(A1)
-   ```
-
-`B1` は `TRUE` になります。
+`H1`は`TRUE`になります。Entityを判定するには、`H2`に`=J2E.IS_EMPTY_OBJECT(D1)`を入力します。結果は`FALSE`です。
 
 ### `J2E.ARRAY(jsonText)`
 
 JSON配列をExcelのスピル配列へ変換します。1次元配列は1列に、入れ子の配列は行列としてスピルします。空配列と、行ごとの列数が異なる配列は受け付けません。
 
-**例**
+`B1`のJSON arrayをスピルする数式を`I1`に入力します。
 
-1. **`A1` を選択し、次の文字列をコピーして Ctrl+V で貼り付けます。** 右クリックで貼り付ける場合は、**貼り付けのオプション > 値** を選びます。
+```excel
+=J2E.ARRAY(B1)
+```
 
-   ```json
-   [["商品","数量"],["りんご",3],["みかん",5]]
-   ```
-
-2. `B1` に次の数式を入力します。
-
-   ```excel
-   =J2E.ARRAY(A1)
-   ```
-
-`B1:C3` に `商品` / `数量`、`りんご` / `3`、`みかん` / `5` が表示されます。
+`I1:J2`に1行目`1` / `2`、2行目`3` / `4`が表示されます。
 
 ## プライバシー
 
